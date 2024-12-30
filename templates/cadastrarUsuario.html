@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+    body {
+      font-family: "Inter", sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #023047;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      align-content: center;
+      justify-content: center;
+      width: 100%;
+      height: 100vh;
+      background-color: #023047;
+    }
+
+    .formCadastrarUsuario {
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      border-radius: 7px;
+      padding: 40px;
+      box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.4);
+      gap: 5px;
+      width: 20%;
+      height: auto;
+    }
+
+    .formCadastrarUsuario h1 {
+      padding: 0;
+      margin: 0;
+      font-weight: 500;
+      font-size: 2.3em;
+    }
+
+    .formCadastrarUsuario input {
+      padding: 15px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      margin-top: 5px;
+      border-radius: 4px;
+      transition: all linear 160ms;
+      outline: none;
+    }
+
+    .formCadastrarUsuario input:focus {
+      border: 1px solid orange;
+    }
+
+    .formCadastrarUsuario label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .btn {
+      background-color: orange;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      border: none !important;
+      transition: all linear 160ms;
+      cursor: pointer;
+      margin: 0 !important;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      background-color: orange;
+    }
+
+    /* Estilos para o alerta */
+    .alert {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+      text-align: center;
+    }
+
+    form {
+      margin-top: 10px;
+    }
+  </style>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro</title>
+  </head>
+  <body>
+    <div class="page">
+      <form
+        method="POST"
+        class="formCadastrarUsuario"
+        action="/validarCadastro"
+      >
+        <h1>Cadastrar</h1>
+
+        <!-- Exibe as mensagens flash diretamente dentro do formulário -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <label for="nome">Nome</label>
+        <input required type="text" name="nome" placeholder="Digite seu nome" />
+        
+        <label for="email">E-mail</label>
+        <input required type="email" name="email" placeholder="Digite seu e-mail" autofocus="true" />
+        
+        <label for="password">Senha</label>
+        <input required type="password" name="password" placeholder="Digite sua senha" />
+        
+        <label for="password2">Repetir senha</label>
+        <input required type="password" name="password2" placeholder="Repita sua senha" />
+
+        <label for="tipo">Tipo do Usuário</label>
+        <input required type="text" name="tipoUser" placeholder="digite o tipo (User ou ADM)" />
+        
+        <input type="submit" value="Cadastrar" class="btn" />
+      </form>
+    </div>
+  </body>
+</html>

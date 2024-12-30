@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Ponto</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f0f2f5;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      .header {
+        background: lightgray;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .header-time {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .card {
+        background: lightgray;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .form-select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+      }
+
+      .button-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-top: 10vh;
+      }
+
+      .btn {
+        padding: 0.75rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+      }
+      .btn:disabled {
+        background-color: #d3d3d3; /* Cinza claro */
+        color: #888; /* Texto em cinza mais escuro */
+        cursor: not-allowed;
+        border: 1px solid #ccc; /* Bordas suavizadas */
+      }
+
+      .btn-primary {
+        background: #0066cc;
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #e9ecef;
+        color: #333;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 14vh;
+      }
+
+      .metric-card {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+      }
+
+      .metric-title {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .metric-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #0066cc;
+      }
+
+      .progress-card {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #ddd;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: #0066cc;
+        width: 75%;
+        border-radius: 4px;
+      }
+
+      @media (max-width: 768px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+
+        .header {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+        }
+      }
+
+      .logout-container {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+      }
+
+      .btn-logout {
+        background-color: #dc3545;
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        margin-left: 30px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .btn-logout:hover {
+        background-color: #c82333;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-logout i {
+        font-size: 1.1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Cabeçalho -->
+      <header class="header">
+        <div>
+          <h1 class="header-title">
+            <i class="fas fa-clock"></i>
+            Sistema de Ponto
+          </h1>
+          <p class="header-time">{{ data_atual }}</p>
+        </div>
+        <div class="user-info">
+          <i class="fas fa-user"></i>
+          <span>{{nome}}</span>
+          <a href="{{ url_for('logout') }}" class="btn-logout">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </a>
+        </div>
+      </header>
+
+      <!-- Conteúdo Principal -->
+      <main class="content">
+        <!-- Card de Registro -->
+        <div class="card">
+          <h2 class="card-title">
+            <i class="fas fa-stopwatch"></i>
+            Registros do Dia
+          </h2>
+
+          <form action="/horas" method="POST">
+            <h3>Entrada: <span id="hora_entrada">{{hora_entrada}}</span></h3>
+            <h3>
+              Saída Almoço:
+              <span id="hora_saida_almoco">{{hora_saida_almoco}}</span>
+            </h3>
+            <h3>
+              Retorno Almoço:
+              <span id="hora_retorno_almoco">{{hora_retorno_almoco}}</span>
+            </h3>
+            <h3>Saída: <span id="hora_saida">{{hora_saida}}</span></h3>
+
+            <div class="button-grid">
+              <button
+                type="button"
+                class="btn btn-primary"
+                value="entrada"
+                name="periodo"
+                id="btn_entrada"
+              >
+                Entrada
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                value="saida_almoco"
+                name="periodo"
+                id="btn_saida_almoco"
+              >
+                Saída Almoço
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                value="retorno_almoco"
+                name="periodo"
+                id="btn_retorno_almoco"
+              >
+                Retorno Almoço
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                value="saida"
+                name="periodo"
+                id="btn_saida"
+              >
+                Saída
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Card de Métricas -->
+        <div class="card">
+          <h2 class="card-title">
+            <i class="fas fa-chart-bar"></i>
+            Métricas e Banco de Horas
+          </h2>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <p class="metric-title">Horas Trabalhadas</p>
+              <p class="metric-value">{{horas_trabalhadas}}</p>
+            </div>
+            <div class="metric-card">
+              <p class="metric-title">Saldo de Horas</p>
+              <p class="metric-value">{{banco}}h</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>  
+  </body>
+</html>

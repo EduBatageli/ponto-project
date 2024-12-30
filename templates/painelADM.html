@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Ponto - Painel Administrativo</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f0f2f5;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      .header {
+        background: lightgray;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .header-time {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .card {
+        background: lightgray;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        background: #fff;
+        border-radius: 5px;
+      }
+
+      th, td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background: #f8f9fa;
+        font-weight: 600;
+      }
+
+      .search-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .btn {
+        padding: 0.75rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #0066cc;
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #e9ecef;
+        color: #333;
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .employee-form {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-input {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .filter-section {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .date-filter {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .btn-logout {
+        background-color: #dc3545;
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .btn-logout:hover {
+        background-color: #c82333;
+      }
+
+      .badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .badge-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .badge-warning {
+        background: #ffc107;
+        color: #000;
+      }
+
+      @media (max-width: 768px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+
+        .header {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+        }
+
+        .filter-section {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Cabeçalho -->
+      <header class="header">
+        <div>
+          <h1 class="header-title">
+            <i class="fas fa-user-shield"></i>
+            Painel Administrativo
+          </h1>
+          <p class="header-time">29 de Dezembro de 2024</p>
+        </div>
+        <div class="user-info">
+          <i class="fas fa-user"></i>
+          <span>Admin: {{nome}}</span>
+          <a href="/logout" class="btn-logout">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </a>
+        </div>
+      </header>
+
+      <!-- Conteúdo Principal -->
+      <main class="content">
+        <!-- Card de Gerenciamento de Funcionários -->
+        <div class="card">
+          <h2 class="card-title">
+            <i class="fas fa-users"></i>
+            Gerenciamento de Funcionários
+          </h2>
+          
+          <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Buscar funcionário..." />
+
+            <form action="/cadastrar">
+              <button class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Novo Funcionário
+              </button>
+            </div>
+            </form>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Matrícula</th>
+                  <th>Departamento</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Maria Santos</td>
+                  <td>F001</td>
+                  <td>TI</td>
+                  <td><span class="badge badge-success">Ativo</span></td>
+                  <td class="action-buttons">
+                    <button class="btn btn-secondary">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Carlos Oliveira</td>
+                  <td>F002</td>
+                  <td>RH</td>
+                  <td><span class="badge badge-success">Ativo</span></td>
+                  <td class="action-buttons">
+                    <button class="btn btn-secondary">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Ana Silva</td>
+                  <td>F003</td>
+                  <td>Financeiro</td>
+                  <td><span class="badge badge-warning">Férias</span></td>
+                  <td class="action-buttons">
+                    <button class="btn btn-secondary">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card de Registros de Ponto -->
+        <div class="card">
+          <h2 class="card-title">
+            <i class="fas fa-clock"></i>
+            Registros de Ponto
+          </h2>
+
+          <div class="filter-section">
+            <div class="date-filter">
+              <label>De:</label>
+              <input type="date" class="form-input" value="2024-12-01" />
+            </div>
+            <div class="date-filter">
+              <label>Até:</label>
+              <input type="date" class="form-input" value="2024-12-29" />
+            </div>
+            <button class="btn btn-primary">
+              <i class="fas fa-search"></i>
+              Filtrar
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Funcionário</th>
+                  <th>Data</th>
+                  <th>Entrada</th>
+                  <th>Saída Almoço</th>
+                  <th>Retorno Almoço</th>
+                  <th>Saída</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Maria Santos</td>
+                  <td>29/12/2024</td>
+                  <td>08:00</td>
+                  <td>12:00</td>
+                  <td>13:00</td>
+                  <td>17:00</td>
+                  <td>8h</td>
+                </tr>
+                <tr>
+                  <td>Carlos Oliveira</td>
+                  <td>29/12/2024</td>
+                  <td>09:00</td>
+                  <td>12:30</td>
+                  <td>13:30</td>
+                  <td>18:00</td>
+                  <td>8h</td>
+                </tr>
+                <tr>
+                  <td>Ana Silva</td>
+                  <td>28/12/2024</td>
+                  <td>08:30</td>
+                  <td>12:00</td>
+                  <td>13:00</td>
+                  <td>17:30</td>
+                  <td>8h</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
