@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = "segredo"
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
-db = SQLAlchemy(app)
+db = SQLAlchemy(app) 
 
 class UsuarioCadastrado(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -15,6 +15,17 @@ class UsuarioCadastrado(db.Model):
     user = db.Column(db.String(50), unique=True, nullable=False)    
     password = db.Column(db.String(250), nullable=False)
     tipoUsuario = db.Column(db.String(20), nullable=False)
+    
+class PontoUsuario(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(250), unique=True, nullable=False)  
+    data = db.Column(db.String(250), unique=True, nullable=False)   
+    entrada = db.Column(db.Integer, unique=True, nullable=False)    
+    saida_almoco = db.Column(db.Integer, nullable=False)
+    volta_almoco = db.Column(db.Integer, nullable=False)
+    saida = db.Column(db.Integer, nullable=False)
+    
+
 
 # Criar a tabela se não existir
 def criar_banco():
@@ -24,6 +35,7 @@ def criar_banco():
 
 # Chame a função para criar o banco de dados
 criar_banco()
+
 
 # Decorador para verificar se o usuário está logado
 def login_required(f):
@@ -45,6 +57,7 @@ DADOS FALTANTES:
 
 - trabalhar o backend da parte de ADM
 - arrumar horas do backend
+- criar banco dass horas
 
 """
 
@@ -52,7 +65,7 @@ DADOS FALTANTES:
 def paginaLogin():
     return render_template("index.html")
 
-@app.route("/validarLogin", methods=("GET", "POST"))
+@app.route("/validarLogin", methods=("GET", "POST")) 
 def validarLogin():
     email_user = request.form["email"]
     senha_user = request.form["password"]
@@ -124,13 +137,14 @@ def adm():
       
 @app.route("/cadastrar")
 def paginaCadastro():
-    if 'user_id' not in session:
-        flash('Por favor, faça login como ADM', 'error')
-        return redirect(url_for("loginADM"))
+    # habilitar 
+    # if 'user_id' not in session:
+    #     flash('Por favor, faça login como ADM', 'error')
+    #     return redirect(url_for("loginADM"))
         
-    if session.get('user_type') != 'ADM': 
-        flash('Acesso não autorizado', 'error')
-        return redirect(url_for("loginADM"))
+    # if session.get('user_type') != 'ADM': 
+    #     flash('Acesso não autorizado', 'error')
+    #     return redirect(url_for("loginADM"))
     
     return render_template("cadastrarUsuario.html")
 
@@ -170,9 +184,7 @@ def validarCadastro():
 
 current_date = datetime.now().strftime('%d/%m/%y')
 
-horaio_entrada = ""
-
-
+horas_trabalhadas = ""
 
 @app.route("/home/<nome>")
 @login_required
@@ -184,23 +196,47 @@ def home(nome):
     
     return render_template("ponto.html", nome=nome, data_atual=current_date)
 
+lista_horarios = []
+
 @app.route('/horas', methods=['POST'])
 def registrar_horas():
     data = request.get_json()
     if not data:
         return jsonify({'error': 'Dados inválidos'}), 400
     
-    periodo = data.get('periodo')
-    horario = data.get('horario')
-    horas = data.get("horas_trabalhadas")
+    if "entrada" in data and data["entrada"].strip():
+        lista_horarios.append(data["entrada"].strip())
+        # print(lista_horarios)
+    
+    if "saida_almoco" in data and data["saida_almoco"].strip():
+        lista_horarios.append(data["saida_almoco"].strip())
+        # print(lista_horarios)
+    
+    if "volta_almoco" in data and data["volta_almoco"].strip():
+        lista_horarios.append(data["volta_almoco"].strip())
+        # print(lista_horarios)
+    
+    if "saida" in data and data["saida"].strip():
+        lista_horarios.append(data["saida"].strip())
+        # print(lista_horarios)
+        
+    print(f"lista: {lista_horarios}")
+
+    #add ao banco aqui
+
+        
+    if len(lista_horarios) >= 4:
+        print(f"tamanho {len(lista_horarios)}")
+        lista_horarios.clear()
+        
+
+
+    return jsonify({'message': 'Horário registrado com sucesso!'})
+
+
+
 
     
-    # Aqui você pode processar ou armazenar os dados recebidos
-    print(f"Período: {periodo}, Horário: {horario}")
-    print("================")
-    print(f"banco: {horas}")
-    return jsonify({'message': 'Horário registrado com sucesso!', 'periodo': periodo, 'horario': horario})
-
 
 # executar a cada 10 min
 @app.route("/logout")

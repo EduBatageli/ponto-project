@@ -317,7 +317,7 @@
           <div class="metrics-grid">
             <div class="metric-card">
               <p class="metric-title">Horas Trabalhadas</p>
-              <p class="metric-value">{{horas_trabalhadas}}</p>
+              <span id="qtdHorasTrabalhadas">{{horas_trabalhadas}}</span>
             </div>
             <div class="metric-card">
               <p class="metric-title">Saldo de Horas</p>
@@ -326,6 +326,117 @@
           </div>
         </div>
       </main>
-    </div>  
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Função para calcular a diferença entre dois horários
+        const calcularDiferencaEmHoras = (hora1, hora2) => {
+          const time1 = new Date(`1970-01-01T${hora1}`);
+          const time2 = new Date(`1970-01-01T${hora2}`);
+        
+          return (time2 - time1) / (1000 * 60 * 60); // diferença em horas
+        };
+    
+        // Função para calcular as horas trabalhadas
+        const calcularHorasTrabalhadas = () => {
+          const entrada = document.getElementById("hora_entrada").textContent;
+          const saidaAlmoco = document.getElementById("hora_saida_almoco").textContent;
+          const retornoAlmoco = document.getElementById("hora_retorno_almoco").textContent;
+          const saida = document.getElementById("hora_saida").textContent;
+    
+          const tempoAntesAlmoco = calcularDiferencaEmHoras(entrada, saidaAlmoco);
+          const tempoDepoisAlmoco = calcularDiferencaEmHoras(retornoAlmoco, saida);
+    
+          return (tempoAntesAlmoco + tempoDepoisAlmoco);
+        };
+
+        // calcular horario do banco
+        
+        
+        // Função para registrar o horário e enviar dados ao servidor
+        const registrarHorario = (idElementoHorario, periodo, idBotao) => {
+          const horarioAtual = new Date().toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+    
+          // Atualiza o horário na tela
+          document.getElementById(idElementoHorario).textContent = horarioAtual;
+    
+          // Desabilita o botão
+          const botao = document.getElementById(idBotao);
+          botao.disabled = true;
+    
+          // Calcula as horas trabalhadas
+          const horasTrabalhadas = calcularHorasTrabalhadas();
+
+          document.getElementById("qtdHorasTrabalhadas").textContent = isNaN(horasTrabalhadas) ? 0 : horasTrabalhadas
+          
+          var hora_entrada = ""
+          var hora_saida_almoco = ""
+          var hora_volta = ""
+          var hora_saida = ""
+
+
+          if (periodo == "entrada"){
+            hora_entrada = document.getElementById("hora_entrada").textContent;
+          }
+          else if (periodo == "saida_almoco"){
+            hora_saida_almoco = document.getElementById("hora_saida_almoco").textContent
+          }
+          else if (periodo == "retorno_almoco"){
+            hora_volta = document.getElementById("hora_retorno_almoco").textContent
+          }
+          else{
+            hora_saida = document.getElementById("hora_saida").textContent
+          }
+
+          console.log(hora_entrada)
+          // Envia os dados ao servidor
+          fetch("/horas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+
+              entrada: hora_entrada,
+              saida_almoco: hora_saida_almoco,
+              volta_almoco: hora_volta,
+              saida: hora_saida,
+              horas_trabalhadas: horasTrabalhadas,
+            }),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Erro ao enviar os dados para o servidor.");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log("Resposta do servidor:", data);
+            })
+            .catch((error) => {
+              console.error(error);
+              botao.disabled = false; // Reabilita o botão em caso de erro
+            });
+        };
+    
+        // Adiciona eventos de clique aos botões
+        const botoes = [
+          { id: "btn_entrada", periodo: "entrada", elementoHorario: "hora_entrada" },
+          { id: "btn_saida_almoco", periodo: "saida_almoco", elementoHorario: "hora_saida_almoco" },
+          { id: "btn_retorno_almoco", periodo: "retorno_almoco", elementoHorario: "hora_retorno_almoco" },
+          { id: "btn_saida", periodo: "saida", elementoHorario: "hora_saida" },
+        ];
+    
+        botoes.forEach(({ id, periodo, elementoHorario }) => {
+          document.getElementById(id).addEventListener("click", () => {
+            registrarHorario(elementoHorario, periodo, id);
+          });
+        });
+      });
+    </script>
+    
   </body>
 </html>
