@@ -223,7 +223,12 @@ def registrar_horas():
     print(f"lista: {lista_horarios}")
 
     #add ao banco aqui
-
+    if len(lista_horarios) == 4:
+        usuario = UsuarioCadastrado.query.filter_by(id=session['user_id']).first()
+        horario = PontoUsuario(email=usuario.email, data=current_date, entrada=lista_horarios[0], saida_almoco=lista_horarios[1], volta_almoco=lista_horarios[2], saida=lista_horarios[3])
+        db.session.add(horario)
+        db.session.commit()
+        print("banco atualizado")
         
     if len(lista_horarios) >= 4:
         print(f"tamanho {len(lista_horarios)}")
