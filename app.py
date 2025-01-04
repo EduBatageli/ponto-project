@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
@@ -26,16 +26,13 @@ class PontoUsuario(db.Model):
     saida = db.Column(db.Integer, nullable=False)
     
 
-
 # Criar a tabela se não existir
 def criar_banco():
     with app.app_context():
         db.create_all()
         print("Banco de dados criado com sucesso.")
-
-# Chame a função para criar o banco de dados
+        
 criar_banco()
-
 
 # Decorador para verificar se o usuário está logado
 def login_required(f):
@@ -48,19 +45,7 @@ def login_required(f):
     return decorated_function
 
 
-# ==========================================================================================================================
-
 # tela login
-
-"""
-DADOS FALTANTES:
-
-- trabalhar o backend da parte de ADM
-- arrumar horas do backend
-- criar banco dass horas
-
-"""
-
 @app.route("/")
 def paginaLogin():
     return render_template("index.html")
@@ -86,11 +71,9 @@ def validarLogin():
             flash("Senha incorreta", "error")
             return redirect(url_for("paginaLogin"))
 
-
 @app.route("/loginADM")
 def loginADM():
     return render_template("loginADM.html")
-
 
 @app.route("/validarLoginADM", methods=("GET", "POST"))
 def validarLoginADM():
@@ -118,9 +101,6 @@ def validarLoginADM():
         else:
             flash("Senha incorreta", "error")
             return redirect(url_for("loginADM"))
-
-
-# tela ADM  
 
 @app.route("/adm")
 def adm():
@@ -180,11 +160,7 @@ def validarCadastro():
         flash("Cadastro realizado com sucesso!", "success")
         return redirect(url_for("paginaLogin"))
 
-# ambas telas
-
 current_date = datetime.now().strftime('%d/%m/%y')
-
-horas_trabalhadas = ""
 
 @app.route("/home/<nome>")
 @login_required
@@ -237,11 +213,6 @@ def registrar_horas():
 
 
     return jsonify({'message': 'Horário registrado com sucesso!'})
-
-
-
-
-    
 
 # executar a cada 10 min
 @app.route("/logout")
